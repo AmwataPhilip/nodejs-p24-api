@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const agent = require("../models/agentsModel");
+const agent = require("../models/agentAuthenticationModel");
 
 router.post("/", async (request, response, next) => {
 	const Agent = new agent({
-		firstname: request.body.firstname,
-		lastname: request.body.lastname,
 		email: request.body.email,
 		password: request.body.password
 	});

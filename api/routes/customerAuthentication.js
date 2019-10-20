@@ -1,24 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const agent = require("../models/agentsModel");
+const customer = require("../models/customerAuthenticationModel");
 
 router.post("/", async (request, response, next) => {
-	const Agent = new agent({
-		firstname: request.body.firstname,
-		lastname: request.body.lastname,
+	const Customer = new customer({
 		email: request.body.email,
 		password: request.body.password
 	});
 	try {
-		const agentSaved = await Agent.save();
+		const customerSaved = await Customer.save();
 		response.json({
-			data: agentSaved,
-			respone: "Agent Added"
+			data: customerSaved,
+			respone: "Customer Added"
 		});
 	} catch (error) {
 		response.json({
 			message: error,
-			result: "Agent not added!"
+			result: "Customer not added!"
 		});
 	}
 });

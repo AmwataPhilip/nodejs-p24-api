@@ -1,23 +1,23 @@
 const mongoose = require("mongoose");
 
 const propertySchema = mongoose.Schema({
-	Id: {
+	id: {
 		type: Number,
 		required: true
 	},
-	Name: {
+	name: {
 		type: String,
 		required: true
 	},
-	Location: {
+	location: {
 		type: String,
 		required: true
 	},
-	ImageURL: {
+	imageURL: {
 		type: String,
 		required: true
 	},
-	Price: {
+	price: {
 		type: String,
 		required: true
 	}
