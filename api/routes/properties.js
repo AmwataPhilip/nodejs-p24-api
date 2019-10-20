@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const agent = require("../models/propertiesModel");
 
 router.get("/", (request, response, next) => {
 	response.status(200).json({
 		message: "Handling GET requests to /properties"
 	});
-});
-
-router.get("/:propertyId", (request, response, next) => {
-	const id = request.params.productId;
 });
 
 router.post("/", (request, response, next) => {
