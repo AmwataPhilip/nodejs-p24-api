@@ -1,0 +1,28 @@
+{
+  "name": "nodejs-zaio-project",
+  "version": "1.0.0",
+  "description": "Backend API for a property web application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmwataPhilip/nodejs-zaio-project.git"
+  },
+  "keywords": [
+    "Property",
+    "Backend",
+    "Api",
+    "Node"
+  ],
+  "author": "Philip Amwata",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmwataPhilip/nodejs-zaio-project/issues"
+  },
+  "homepage": "https://github.com/AmwataPhilip/nodejs-zaio-project#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
