@@ -8,17 +8,21 @@ router.post("/", async (request, response, next) => {
 		password: request.body.password
 	});
 	try {
-		const customerSaved = await Customer.save();
+		const customerLogin = await Customer.validate();
 		response.json({
-			data: customerSaved,
-			respone: "Customer Added"
+			data: customerLogin,
+			respone: "Customer Login Successsful"
 		});
 	} catch (error) {
 		response.json({
 			message: error,
-			result: "Customer not added!"
+			result: "Customer Login Unsuccesful!"
 		});
 	}
 });
 
 module.exports = router;
+
+// TODO: Get the customer email and password
+// TODO: Do a find matching record in the database
+// TODO: Return JWT Token
