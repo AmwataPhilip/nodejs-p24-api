@@ -1,26 +1,49 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const customer = require("../models/customersModel");
+const bcrypt = require("bcrypt");
 
 router.post("/", async (request, response, next) => {
-	const Customer = new customer({
-		firstname: request.body.firstname,
-		lastname: request.body.lastname,
-		email: request.body.email,
-		password: request.body.password
-	});
-	try {
-		const customerSaved = await Customer.save();
-		response.json({
-			data: customerSaved,
-			respone: "Customer Added"
+	customer
+		.find({ email: request.body.email })
+		.exec()
+		.then(Customer => {
+			if (Customer.length > 1) {
+				return response.status(409).json({
+					message: "That Email ALready Exists"
+				});
+			} else {
+				bcrypt.hash(request.body.password, 10, (error, hash) => {
+					if (error) {
+						return response.status(500).json({
+							message: error.message
+						});
+					} else {
+						const Customer = new customer({
+							_id: mongoose.Types.ObjectId(),
+							firstname: request.body.firstname,
+							lastname: request.body.lastname,
+							email: request.body.email,
+							password: hash
+						});
+						Customer.save()
+							.then(result => {
+								response.status(200).json({
+									customer: result,
+									message: "Customer Account Created Successfully"
+								});
+							})
+							.catch(error => {
+								response.status(500).json({
+									message: error.message,
+									result: "Customer Account Not Created"
+								});
+							});
+					}
+				});
+			}
 		});
-	} catch (error) {
-		response.json({
-			message: error,
-			result: "Customer not added!"
-		});
-	}
 });
 
 module.exports = router;

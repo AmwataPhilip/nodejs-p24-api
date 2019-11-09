@@ -1,11 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const agent = require("../models/agentAuthenticationModel");
+const bcrypt = require("bcrypt");
 
 router.post("/", async (request, response, next) => {
-	const Agent = new agent({
-		email: request.body.email,
-		password: request.body.password
+	bcrypt.hash(request.body.password, 10, (error, hash) => {
+		if (error) {
+			return response.status(500).json({
+				message: error.message
+			});
+		} else {
+			const Agent = new agent({
+				email: request.body.email,
+				password: hash
+			});
+		}
 	});
 	try {
 		const agentLogin = await Agent.validate();

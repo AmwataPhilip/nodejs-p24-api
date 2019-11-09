@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const property = require("../models/propertiesModel");
 
 router.get("/", (request, response, next) => {
@@ -34,19 +35,19 @@ router.get("/:propertyId", (request, response, next) => {
 					data: doc,
 					result: "Property Found"
 				});
-			} else {
-				response.status(404).json({ message: `Property with id ${id} was not found` });
 			}
 		})
 		.catch(error => {
 			response.status(500).json({
-				message: error.message
+				message: error.message,
+				result: `Property with id ${id} was not found`
 			});
 		});
 });
 
 router.post("/", async (request, response, next) => {
 	const Property = new property({
+		_id: mongoose.Types.ObjectId(),
 		name: request.body.name,
 		location: request.body.location,
 		imageURL: request.body.imageURL,
@@ -66,8 +67,8 @@ router.post("/", async (request, response, next) => {
 		});
 	} catch (error) {
 		response.json({
-			message: error,
-			result: "Property not added!"
+			message: error.message,
+			result: "Property not Added"
 		});
 	}
 });
