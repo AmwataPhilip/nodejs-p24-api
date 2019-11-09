@@ -26,3 +26,4 @@ module.exports = router;
 // TODO: Get the agent email and password
 // TODO: Do a find matching record in the database
 // TODO: Return JWT Token
+// TODO: Hash the passswords

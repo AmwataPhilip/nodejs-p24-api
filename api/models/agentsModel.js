@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const agentSchema = mongoose.Schema({
+	_id: mongoose.Schema.Types.ObjectId,
 	firstname: {
 		type: String,
 		required: true

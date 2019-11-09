@@ -5,9 +5,14 @@ const property = require("../models/propertiesModel");
 router.get("/", (request, response, next) => {
 	property
 		.find()
+		.select("name location imageURL price")
 		.exec()
 		.then(doc => {
-			response.status(200).json(doc);
+			const res = {
+				count: doc.length,
+				properties: doc
+			};
+			response.status(200).json(res);
 		})
 		.catch(error => {
 			response.status(500).json({
@@ -21,6 +26,7 @@ router.get("/:propertyId", (request, response, next) => {
 	const id = request.params.propertyId;
 	property
 		.findById(id)
+		.select("name location imageURL price")
 		.exec()
 		.then(doc => {
 			if (doc) {
@@ -29,20 +35,18 @@ router.get("/:propertyId", (request, response, next) => {
 					result: "Property Found"
 				});
 			} else {
-				response.status(404).json({ message: "No Property Found" });
+				response.status(404).json({ message: `Property with id ${id} was not found` });
 			}
 		})
 		.catch(error => {
 			response.status(500).json({
-				message: error.message,
-				result: "No Property Found"
+				message: error.message
 			});
 		});
 });
 
 router.post("/", async (request, response, next) => {
 	const Property = new property({
-		id: parseInt(request.body.id),
 		name: request.body.name,
 		location: request.body.location,
 		imageURL: request.body.imageURL,
@@ -51,7 +55,13 @@ router.post("/", async (request, response, next) => {
 	try {
 		const propertySaved = await Property.save();
 		response.json({
-			data: propertySaved,
+			property: {
+				_id: propertySaved._id,
+				name: propertySaved.name,
+				location: propertySaved.location,
+				imageURL: propertySaved.imageURL,
+				price: propertySaved.price
+			},
 			result: "Property Added"
 		});
 	} catch (error) {
@@ -76,7 +86,20 @@ router.patch("/:propertyId", (request, response, next) => {
 			}
 		)
 		.exec()
-		.then()
+		.then(() => {
+			property.findById(id).then(doc => {
+				response.status(200).json({
+					property: {
+						_id: doc._id,
+						name: doc.name,
+						location: doc.location,
+						imageURL: doc.imageURL,
+						price: doc.price
+					},
+					message: "Property Updated Successfully"
+				});
+			});
+		})
 		.catch(error => {
 			response.status(500).json({
 				message: error.message,
@@ -91,7 +114,10 @@ router.delete("/:propertyId", (request, response, next) => {
 		.remove({ _id: id })
 		.exec()
 		.then(result => {
-			response.status(200).json(result);
+			response.status(200).json({
+				response: result,
+				message: "Property Deleted Successfully"
+			});
 		})
 		.catch(error => {
 			response.status(500).json({
