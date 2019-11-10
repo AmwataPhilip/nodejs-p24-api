@@ -1,33 +1,44 @@
 const express = require("express");
 const router = express.Router();
-const agent = require("../models/agentAuthenticationModel");
+const agent = require("../models/agentsModel");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 router.post("/", async (request, response, next) => {
-	bcrypt.hash(request.body.password, 10, (error, hash) => {
-		if (error) {
-			return response.status(500).json({
-				message: error.message
+	agent
+		.find({ email: request.body.email })
+		.exec()
+		.then(Agent => {
+			if (Agent.length < 1) {
+				return response.status(401).json({
+					message: "Agent Authentication Failed"
+				});
+			}
+			bcrypt.compare(request.body.password, Agent[0].password, (error, result) => {
+				if (error) {
+					return response.status(401).json({
+						message: "Agent Authenticaton Failed"
+					});
+				}
+				if (result) {
+					const token = jwt.sign(
+						{
+							email: Agent[0].email,
+							agentId: Agent[0]._id
+						},
+						process.env.JWT_KEY,
+						{
+							expiresIn: "1h"
+						}
+					);
+					return response.status(200).json({
+						message: "Agent Authentication Successful",
+						token: token
+					});
+				}
 			});
-		} else {
-			const Agent = new agent({
-				email: request.body.email,
-				password: hash
-			});
-		}
-	});
-	try {
-		const agentLogin = await Agent.validate();
-		response.json({
-			data: agentLogin,
-			respone: "Agent Login Successful"
-		});
-	} catch (error) {
-		response.json({
-			message: error,
-			result: "Agent Login Unsuccessful"
-		});
-	}
+		})
+		.catch();
 });
 
 module.exports = router;

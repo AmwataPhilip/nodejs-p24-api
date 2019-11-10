@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const customer = require("../models/customersModel");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 router.post("/", async (request, response, next) => {
 	customer
@@ -11,9 +12,19 @@ router.post("/", async (request, response, next) => {
 		.then(Customer => {
 			if (Customer.length > 1) {
 				return response.status(409).json({
-					message: "That Email ALready Exists"
+					message: "That Email Already Exists"
 				});
 			} else {
+				const token = jwt.sign(
+					{
+						email: request.body.email,
+						customerId: request.body._id
+					},
+					process.env.JWT_KEY,
+					{
+						expiresIn: "1h"
+					}
+				);
 				bcrypt.hash(request.body.password, 10, (error, hash) => {
 					if (error) {
 						return response.status(500).json({
@@ -31,6 +42,7 @@ router.post("/", async (request, response, next) => {
 							.then(result => {
 								response.status(200).json({
 									customer: result,
+									token: token,
 									message: "Customer Account Created Successfully"
 								});
 							})

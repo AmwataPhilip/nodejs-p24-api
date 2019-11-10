@@ -15,6 +15,16 @@ router.post("/", async (request, response, next) => {
 					message: "That Email ALready Exists"
 				});
 			} else {
+				const token = jwt.sign(
+					{
+						email: request.body.email,
+						agentId: request.body._id
+					},
+					process.env.JWT_KEY,
+					{
+						expiresIn: "1h"
+					}
+				);
 				bcrypt.hash(request.body.password, 10, (error, hash) => {
 					if (error) {
 						return response.status(500).json({
@@ -32,6 +42,7 @@ router.post("/", async (request, response, next) => {
 							.then(result => {
 								response.status(200).json({
 									agent: result,
+									token: token,
 									message: "Agent Account Created Successfully"
 								});
 							})
